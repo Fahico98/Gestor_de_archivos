@@ -1,3 +1,9 @@
+
+<?php
+   include("createDatabase.php");
+   createDatabase();
+?>
+
 <!doctype html>
 <html lang="es">
 

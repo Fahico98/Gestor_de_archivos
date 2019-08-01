@@ -4,31 +4,6 @@ dropArea = $("#dropArea");
 inputFiles = $("#inputFiles");
 uploadProgress = $("#uploadProgress");
 
-$(function(){
-   inputFiles.fileupload({
-      url: "validateFiles.php",
-      dropZone: dropArea,
-      dataType: "json",
-      autoUpload: false,
-      singleFileUploads: false,
-   }).on("fileuploadadd", function(event, data){
-      data.submit();
-   }).on("fileuploaddone", function(event, data){
-      var response = data.jqXHR.responseJSON;
-      for(var key in response){
-         var fileName = key;
-         var fileStatus = response[key];
-         var icon = getIcon(fileName);
-         var errorLabel = getErrorLabel(fileStatus);
-         filesList.append(
-            "<li class='list-group-item filesListItem'>" +
-               icon + "&nbsp;&nbsp;" + fileName + "&nbsp;&nbsp;" + errorLabel +
-            "</li>"
-         );
-      }
-   });
-});
-
 $(document).ready(function(){
    dropArea.on("dragenter dragstart dragend dragleave dragover drag drop", function (event) {
       event.preventDefault();
@@ -48,6 +23,36 @@ $(document).ready(function(){
          event.stopPropagation();
          dropArea.css("border", "2px cornflowerblue dashed");
          dropArea.css("color", "cornflowerblue");
+      }
+   });
+   inputFiles.fileupload({
+      url: "uploadFiles.php",
+      type: "POST",
+      dropZone: dropArea,
+      dataType: "json",
+      autoUpload: false,
+      singleFileUploads: false,
+      progressInterval: 10000,
+      bitrateInterval: 10000,
+      fileInput: inputFiles,
+      maxChunkSize: 500000000,
+      limitMultiFileUploadSize: 500000000
+   }).on("fileuploadadd", function(event, data){
+      data.submit();
+   }).on("fileuploadprogressall", function(event, data){
+      console.log("...");
+   }).on("fileuploaddone", function(event, data){
+      var response = data.jqXHR.responseJSON;
+      for(var key in response){
+         var fileName = key;
+         var fileStatus = response[key];
+         var icon = getIcon(fileName);
+         var errorLabel = getErrorLabel(fileStatus);
+         filesList.append(
+            "<li class='list-group-item filesListItem'>" +
+               icon + "&nbsp;&nbsp;" + fileName + "&nbsp;&nbsp;" + errorLabel +
+            "</li>"
+         );
       }
    });
 });
@@ -80,19 +85,9 @@ function getErrorLabel(fileStatus){
    if(fileStatus == "exists"){
       errorMssg = "<strong style='color: red;'>[El archivo ya existe]</strong>";
    }else if(fileStatus == "error"){
-      errorsMssg = "<strong style='color: red;'>[Ocurrió un error al cargar el archivo]</strong>";
+      errorMssg = "<strong style='color: red;'>[Ocurrió un error al cargar el archivo]</strong>";
    }else if(fileStatus == "sizeExceeded"){
-      errorsMssg = "<strong style='color: red;'>[El archivo excede el tamaño permitido (50MB)]</strong>";
+      errorMssg = "<strong style='color: red;'>[El archivo excede el tamaño permitido (10MB)]</strong>";
    }
    return(errorMssg);
 }
-
-function sleep(milliseconds) {
-   var start = new Date().getTime();
-   for (var i = 0; i < 1e7; i++) {
-      if ((new Date().getTime() - start) > milliseconds){
-         break;
-      }
-   }
-}
-
