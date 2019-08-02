@@ -2,7 +2,6 @@
 filesList = $("#filesList");
 dropArea = $("#dropArea");
 inputFiles = $("#inputFiles");
-uploadProgress = $("#uploadProgress");
 
 $(document).ready(function(){
    dropArea.on("dragenter dragstart dragend dragleave dragover drag drop", function (event) {
@@ -25,6 +24,7 @@ $(document).ready(function(){
          dropArea.css("color", "cornflowerblue");
       }
    });
+   
    inputFiles.fileupload({
       url: "uploadFiles.php",
       type: "POST",
@@ -40,7 +40,6 @@ $(document).ready(function(){
    }).on("fileuploadadd", function(event, data){
       data.submit();
    }).on("fileuploadprogressall", function(event, data){
-      console.log("...");
    }).on("fileuploaddone", function(event, data){
       var response = data.jqXHR.responseJSON;
       for(var key in response){
